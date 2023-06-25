@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
-function LoginPage() {
+function LoginPage({ history }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory();
 
   const handleLogin = async () => {
     try {
@@ -17,10 +15,9 @@ function LoginPage() {
       });
 
       if (response.ok) {
-        // Login successful
         const userResponse = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:BPMn1_6B/auth/me', {
           headers: {
-            'Authorization': `Bearer ${response.token}`, // Assuming the backend returns a token upon successful login
+            'Authorization': `Bearer ${response.token}`,
           },
         });
 
@@ -31,15 +28,12 @@ function LoginPage() {
           // Redirect to the dashboard after successful login
           history.push('/dashboard');
         } else {
-          // Handle error when fetching user information
           console.log('Error fetching user information');
         }
       } else {
-        // Handle error for unsuccessful login
         console.log('Login failed');
       }
     } catch (error) {
-      // Handle any other errors
       console.log('Error:', error);
     }
   };
