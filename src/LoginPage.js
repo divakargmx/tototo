@@ -1,77 +1,77 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-const LoginPage = () => {
+function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const history = useHistory();
 
-  const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleLogin = async () => {
     try {
       const response = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:BPMn1_6B/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (response.ok) {
         // Login successful
-        // Fetch user data
-        const userDataResponse = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:BPMn1_6B/auth/me', {
-          method: 'GET',
+        const userResponse = await fetch('https://x8ki-letl-twmt.n7.xano.io/api:BPMn1_6B/auth/me', {
           headers: {
-            Authorization: `Bearer ${accessToken}`, // Add your access token here
+            'Authorization': `Bearer ${response.token}`, // Assuming the backend returns a token upon successful login
           },
         });
 
-        if (userDataResponse.ok) {
-          const userData = await userDataResponse.json();
-          // Store user data in state or global context if needed
-          // Redirect to the dashboard route
+        if (userResponse.ok) {
+          const user = await userResponse.json();
+          // Save user information to local storage or state as needed
+
+          // Redirect to the dashboard after successful login
           history.push('/dashboard');
         } else {
-          // Handle fetching user data failure
+          // Handle error when fetching user information
+          console.log('Error fetching user information');
         }
       } else {
-        // Handle login failure
-        // Display error message or take appropriate action
+        // Handle error for unsuccessful login
+        console.log('Login failed');
       }
     } catch (error) {
-      // Handle network or other errors
+      // Handle any other errors
+      console.log('Error:', error);
     }
   };
 
   return (
     <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input type="text" value={username} onChange={handleUsernameChange} />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" value={password} onChange={handlePasswordChange} />
-        </div>
-        <button type="submit">Login</button>
+      <h1>Login Page</h1>
+      <form>
+        <label>
+          Username:
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </label>
+        <br />
+        <label>
+          Password:
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        <br />
+        <button type="button" onClick={handleLogin}>
+          Login
+        </button>
       </form>
     </div>
   );
-};
+}
 
 export default LoginPage;
